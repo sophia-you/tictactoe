@@ -50,91 +50,123 @@ int main()
 
   bool playing = true; // if this is false, the game will stop
 
-  clearBoard(board, row, column);
-  printBoard(board, row, column);
-
-  // the game keeps running while the user is playing
-  while (!checkWin(board, X_MOVE) &&
-	 !checkWin(board, O_MOVE) &&
-	 !checkTie(board, row, column))
+  while (playing)
     {
-      if (turn == X_TURN)
-	{
-	  cout << "It's Player X's turn." << endl;
-	}
-      else if (turn == O_TURN)
-	{
-	  cout << "It's Player O's turn." << endl;
-	}
+      clearBoard(board, row, column);
+      printBoard(board, row, column);
+      turn = X_TURN; // x always starts first
+      move = X_MOVE;
 
-      // input from command line
-      cout << "Please enter the location of your move (ex/ A1 is the top left)" << endl;
-      cout << "Use lowercase letters only (ex/ a1 for A1)." << endl;
-      cin.getline(input, max);
-
-      // the input must be 2 characters long, with the first being a, b or c and the second being 1, 2, or 3
-      bool validMove = false;
-      while (validMove == false)
+      // the game keeps running while the user is playing
+      while (!checkWin(board, X_MOVE) &&
+	     !checkWin(board, O_MOVE) &&
+	     !checkTie(board, row, column))
 	{
-	  if (strlen(input) == 2
-	      && (input[1] >= '1' && input[1] <= '3'))
+	  if (turn == X_TURN)
 	    {
-	      if (input[0] >= 'a' && input[0] <= 'c')
+	      cout << "It's Player X's turn." << endl;
+	    }
+	  else if (turn == O_TURN)
+	    {
+	      cout << "It's Player O's turn." << endl;
+	    }
+
+	  // input from command line
+	  cout << "Please enter the location of your move (ex/ A1 is the top left)" << endl;
+	  cout << "Use lowercase letters only (ex/ a1 for A1)." << endl;
+	  cin.getline(input, max);
+
+	  // the input must be 2 characters long, with the first being a, b or c and the second being 1, 2, or 3
+	  bool validMove = false;
+	  int inputRow = -1;
+	  int inputColumn = -1;
+
+	  while (validMove == false)
+	    {
+	      if (strlen(input) == 2
+		  && (input[1] >= '1' && input[1] <= '3'))
 		{
-		  validMove = true;
+		  if (input[0] >= 'a' && input[0] <= 'c')
+		    {
+		      inputRow = input[0] - 'a'; // the row "A" is actually board[0][] in the code, so you must subtract
+		      inputColumn = input[1] - '1'; // the column '1' is actually board[][0] in the code
+		      if (board[inputRow][inputColumn] == BLANK)
+			{
+			  validMove = true;
+			}
+		      else
+			{
+			  cout << "That slot is already taken. Please pick another move." << endl;
+			  cin.getline(input, max);
+			}
+		    }
+		  else
+		    {
+		      cout << "Please only enter lowercase letters!" << endl;
+		      cin.getline(input, max);
+		    }
 		}
-	      else
+	      else // if the move isn't valid you have to enter another move
 		{
-		  cout << "Please only enter lowercase letters!" << endl;
+		  cout << "Please enter a valid move." << endl;
 		  cin.getline(input, max);
 		}
 	    }
-	  else // if the move isn't valid you have to enter another move
+
+
+	  // translate the move from the command line to coordinates on the board
+	  //inputRow = input[0] - 'a'; // the row "A" is actually board[0][] in the code, so you must subtract
+	  //inputColumn = input[1] - '1'; // the column '1' is actually board[][0] in the code
+	  board[inputRow][inputColumn] = move;
+	  printBoard(board, row, column);
+
+	  turn = !turn; // the next player gets to move
+	    if (turn == X_TURN)
 	    {
-	      cout << "Please enter a valid move." << endl;
-	      cin.getline(input, max);
+	      move = X_MOVE;
 	    }
+	  else if (turn == O_TURN)
+	    {
+	      move = O_MOVE;
+	    }
+
+	    // print who won
+	    if (checkWin(board, X_MOVE))
+	      {
+		xWins++;
+		cout << "X wins this round!" << endl;
+	      }
+	    else if (checkWin(board, O_MOVE))
+	      {
+		oWins++;
+		cout << "O wins this round!" << endl;
+	      }
+	    else if (checkTie(board, row, column))
+	      {
+		numTies++;
+		cout << "It's a tie!" << endl;
+	      }
 	}
 
+      // print the scores
+       cout << "X Score: " << xWins << endl;
+       cout << "O Score: " << oWins << endl;
+       cout << "Number of Ties: " << numTies << endl;
 
-      // translate the move from the command line to coordinates on the board
-      int inputRow = input[0] - 'a'; // the row "A" is actually board[0][] in the code, so you must subtract
-      int inputColumn = input[1] - '1'; // the column '1' is actually board[][0] in the code
-      board[inputRow][inputColumn] = move;
-      printBoard(board, row, column);
-
-      turn = !turn; // the next player gets to move
-	if (turn == X_TURN)
+      // ask the user if they want to play again
+      // credit to myself, C++ guessing game assignment
+      cout << "Play again? Press 1 to continue, press 0 to quit." << endl;
+      char inputPlay = ' ';
+      cin >> inputPlay;
+      if (inputPlay == '0')
 	{
-	  move = X_MOVE;
-	}
-      else if (turn == O_TURN)
-	{
-	  move = O_MOVE;
+	  playing = false;
 	}
 
-	// print the scores
-	if (checkWin(board, X_MOVE))
-	  {
-	    xWins++;
-	    cout << "X wins this round!" << endl;
-	  }
-	else if (checkWin(board, O_MOVE))
-	  {
-	    oWins++;
-	    cout << "O wins this round!" << endl;
-	  }
-	else if (checkTie(board, row, column))
-	  {
-	    numTies++;
-	    cout << "It's a tie!" << endl;
-	  }
-
-	  cout << "X Score: " << xWins << endl;
-	  cout << "O Score: " << oWins << endl;
-	  cout << "Number of Ties: " << numTies;
     }
-   return 0;
+  
+  cout << "Game over." << endl;
+  return 0;
 }
 
     // prints board out to the command line
