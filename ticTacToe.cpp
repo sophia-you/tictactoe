@@ -15,6 +15,7 @@ using namespace std;
  *
  * Sources |
  * https://cplusplus.com/doc/oldtutorial/typecasting/
+ * + my previous project tictactoe from Java Programming
  *
  */
 
@@ -90,11 +91,11 @@ int main()
 		    {
 		      inputRow = input[0] - 'a'; // the row "A" is actually board[0][] in the code, so you must subtract
 		      inputColumn = input[1] - '1'; // the column '1' is actually board[][0] in the code
-		      if (board[inputRow][inputColumn] == BLANK)
+		      if (board[inputRow][inputColumn] == BLANK) // make sure the move spot is empty before moving!
 			{
 			  validMove = true;
 			}
-		      else
+		      else // the move isn't legal
 			{
 			  cout << "That slot is already taken. Please pick another move." << endl;
 			  cin.getline(input, max);
@@ -115,8 +116,6 @@ int main()
 
 
 	  // translate the move from the command line to coordinates on the board
-	  //inputRow = input[0] - 'a'; // the row "A" is actually board[0][] in the code, so you must subtract
-	  //inputColumn = input[1] - '1'; // the column '1' is actually board[][0] in the code
 	  board[inputRow][inputColumn] = move;
 	  printBoard(board, row, column);
 
